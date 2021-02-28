@@ -1,4 +1,4 @@
-name: .NET Core build and test
+name: .NET Core build, test and publish
 
 on:
   push:
@@ -7,27 +7,38 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  main:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
+
     - name: Install dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --configuration Release --no-restore
+
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+
     - name: Publish on version change
       id: publish_nuget
       uses: rohith/publish-nuget@v2
       with:
-        PROJECT_FILE_PATH: src/Polytext/Polytext.csproj
+        PROJECT_FILE_PATH: ./Polytext/Polytext.csproj
         VERSION_REGEX: ^\s*<Version>(.*)<\/Version>\s*$
         TAG_COMMIT: true
         TAG_FORMAT: v*
