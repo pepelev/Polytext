@@ -1,0 +1,46 @@
+name: .NET Core build and test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+
+    - name: Install dependencies
+      working-directory: ./src
+      run: dotnet restore
+
+    - name: Build
+      working-directory: ./src
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Test
+      working-directory: ./src
+      run: dotnet test --no-restore --verbosity normal
+
+    - name: Publish on version change
+      working-directory: ./src
+      id: publish_nuget
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Polytext/Polytext.csproj
+        VERSION_REGEX: ^\s*<Version>(.*)<\/Version>\s*$
+        TAG_COMMIT: true
+        TAG_FORMAT: v*
+        NUGET_KEY: ${{secrets.NUGETKEY}}
+        NUGET_SOURCE: https://api.nuget.org
+        INCLUDE_SYMBOLS: true
