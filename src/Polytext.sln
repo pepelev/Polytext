@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polyglot", "Polyglot\Polyglot.csproj", "{66745AFD-3F58-4817-883B-D913B5FDF9EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Polytext", "Polytext\Polytext.csproj", "{66745AFD-3F58-4817-883B-D913B5FDF9EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polyglot.Tests", "Polyglot.Tests\Polyglot.Tests.csproj", "{17FC896F-BB00-455F-A3CE-565B728CB16D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Polytext.Tests", "Polytext.Tests\Polytext.Tests.csproj", "{17FC896F-BB00-455F-A3CE-565B728CB16D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

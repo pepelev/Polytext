@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Polyglot\Polyglot.csproj" />
+    <ProjectReference Include="..\Polytext\Polytext.csproj" />
   </ItemGroup>
 
 </Project>
