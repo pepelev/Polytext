@@ -1,7 +1,7 @@
-name: Build, test and publish
+name: Build and test
 
 on:
-  push:
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -31,15 +31,3 @@ jobs:
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
-
-    - name: Publish on version change
-      id: publish_nuget
-      uses: rohith/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: ./src/Polytext/Polytext.csproj
-        VERSION_REGEX: ^\s*<Version>(.*)<\/Version>\s*$
-        TAG_COMMIT: true
-        TAG_FORMAT: v*
-        NUGET_KEY: ${{secrets.NUGETKEY}}
-        NUGET_SOURCE: https://api.nuget.org
-        INCLUDE_SYMBOLS: true
