@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Poly.Tests</RootNamespace>
     <LangVersion>9</LangVersion>
+    <OutputPath>..\..\bin\Polytext.Tests\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
