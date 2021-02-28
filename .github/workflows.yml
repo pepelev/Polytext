@@ -10,6 +10,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
     steps:
     - name: Checkout
@@ -21,7 +23,7 @@ jobs:
         dotnet-version: 3.1.101
 
     - name: Install dependencies
-      run: dotnet restore ./src
+      run: dotnet restore ./src/Polytext.sln
 
     - name: Build
       run: dotnet build --configuration Release --no-restore ./src
