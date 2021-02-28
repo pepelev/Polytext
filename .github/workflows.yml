@@ -11,12 +11,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./src
-
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
@@ -24,19 +21,19 @@ jobs:
         dotnet-version: 3.1.101
 
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore ./src
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore ./src
 
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal ./src
 
     - name: Publish on version change
       id: publish_nuget
       uses: rohith/publish-nuget@v2
       with:
-        PROJECT_FILE_PATH: src/Polytext/Polytext.csproj
+        PROJECT_FILE_PATH: ./src/Polytext/Polytext.csproj
         VERSION_REGEX: ^\s*<Version>(.*)<\/Version>\s*$
         TAG_COMMIT: true
         TAG_FORMAT: v*
