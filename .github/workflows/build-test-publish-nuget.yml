@@ -38,7 +38,7 @@ jobs:
       id: publish_nuget
       uses: rohith/publish-nuget@v2
       with:
-        PROJECT_FILE_PATH: ./Polytext/Polytext.csproj
+        PROJECT_FILE_PATH: ./src/Polytext/Polytext.csproj
         VERSION_REGEX: ^\s*<Version>(.*)<\/Version>\s*$
         TAG_COMMIT: true
         TAG_FORMAT: v*
