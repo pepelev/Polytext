@@ -17,6 +17,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    steps:
+    - name: Where
+      run: pwd
+
+    steps:
+    - name: What
+      run: ls -a
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
