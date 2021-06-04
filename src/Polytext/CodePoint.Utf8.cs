@@ -13,6 +13,8 @@ namespace Poly
                 this.codepoint = codepoint;
             }
 
+            public byte BytesRequired => Write(Span<byte>.Empty).BytesRequired;
+
             public BytesWriteResult Write(Span<byte> destination)
             {
                 if (codepoint.Value <= 0x7F)
@@ -78,8 +80,7 @@ namespace Poly
 
             public byte[] Bytes()
             {
-                var writeResult = Write(Span<byte>.Empty);
-                var result = new byte[writeResult.BytesRequired];
+                var result = new byte[BytesRequired];
                 Write(result);
                 return result;
             }

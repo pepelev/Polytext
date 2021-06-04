@@ -48,5 +48,8 @@ namespace Poly
         public static bool operator >(CodePoint left, CodePoint right) => left.CompareTo(right) > 0;
         public static bool operator <=(CodePoint left, CodePoint right) => left.CompareTo(right) <= 0;
         public static bool operator >=(CodePoint left, CodePoint right) => left.CompareTo(right) >= 0;
+        public Utf8 AsUtf8 => new(this);
+        public Utf16 AsUtf16 => new(this);
+        public Utf32 AsUtf32 => new(this);
     }
 }

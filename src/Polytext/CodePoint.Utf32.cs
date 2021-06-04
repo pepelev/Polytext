@@ -6,6 +6,8 @@ namespace Poly
     {
         public readonly struct Utf32
         {
+            public const int BytesRequired = 4;
+
             private readonly CodePoint codepoint;
 
             public Utf32(CodePoint codepoint)
@@ -15,9 +17,9 @@ namespace Poly
 
             public BytesWriteResult WriteLittleEndian(Span<byte> destination)
             {
-                if (destination.Length < 4)
+                if (destination.Length < BytesRequired)
                 {
-                    return new BytesWriteResult(4, 0);
+                    return new BytesWriteResult(BytesRequired, 0);
                 }
 
                 unchecked
@@ -28,22 +30,21 @@ namespace Poly
                     destination[3] = (byte) ((codepoint.Value >> 24) & 0xFF);
                 }
 
-                return new BytesWriteResult(4, 4);
+                return new BytesWriteResult(BytesRequired, BytesRequired);
             }
 
             public byte[] LittleEndianBytes()
             {
-                var writeResult = WriteLittleEndian(Span<byte>.Empty);
-                var result = new byte[writeResult.BytesRequired];
+                var result = new byte[BytesRequired];
                 WriteLittleEndian(result);
                 return result;
             }
 
             public BytesWriteResult WriteBigEndian(Span<byte> destination)
             {
-                if (destination.Length < 4)
+                if (destination.Length < BytesRequired)
                 {
-                    return new BytesWriteResult(4, 0);
+                    return new BytesWriteResult(BytesRequired, 0);
                 }
 
                 unchecked
@@ -54,13 +55,12 @@ namespace Poly
                     destination[3] = (byte) (codepoint.Value & 0xFF);
                 }
 
-                return new BytesWriteResult(4, 4);
+                return new BytesWriteResult(BytesRequired, BytesRequired);
             }
 
             public byte[] BigEndianBytes()
             {
-                var writeResult = WriteBigEndian(Span<byte>.Empty);
-                var result = new byte[writeResult.BytesRequired];
+                var result = new byte[BytesRequired];
                 WriteBigEndian(result);
                 return result;
             }

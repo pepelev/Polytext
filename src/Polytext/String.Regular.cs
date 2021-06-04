@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Poly
 {
@@ -16,23 +15,22 @@ namespace Poly
                 this.surrogates = surrogates;
             }
 
+            public override int Count => content.Length - surrogates.Count;
+
+            public override CodePoint this[int index] => new(
+                content,
+                index + SurrogatesBefore(index)
+            );
+
             public override IEnumerator<CodePoint> GetEnumerator()
             {
                 for (var i = 0; i < content.Length;)
                 {
                     var point = new CodePoint(content, i);
                     yield return point;
-                    var result = point.WriteUtf16(Span<char>.Empty);
-                    i += result.CodeUnitsRequired;
+                    i += point.AsUtf16.CodeUnitsRequired;
                 }
             }
-
-            public override int Count => content.Length - surrogates.Count;
-
-            public override CodePoint this[int index] => new CodePoint(
-                content,
-                index + SurrogatesBefore(index)
-            );
 
             private int SurrogatesBefore(int index) => surrogates.BinarySearch(index) switch
             {

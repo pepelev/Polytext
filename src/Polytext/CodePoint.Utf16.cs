@@ -13,6 +13,9 @@ namespace Poly
                 this.codepoint = codepoint;
             }
 
+            public byte CodeUnitsRequired => Write(Span<char>.Empty).CodeUnitsRequired;
+            public byte BytesRequired => WriteLittleEndian(Span<byte>.Empty).BytesRequired;
+
             public WriteResult Write(Span<char> destination)
             {
                 if (codepoint.Value <= 0xFFFF)
@@ -41,8 +44,7 @@ namespace Poly
 
             public char[] Chars()
             {
-                var writeResult = Write(Span<char>.Empty);
-                var result = new char[writeResult.CodeUnitsRequired];
+                var result = new char[CodeUnitsRequired];
                 Write(result);
                 return result;
             }
@@ -78,8 +80,7 @@ namespace Poly
 
             public byte[] LittleEndianBytes()
             {
-                var writeResult = WriteLittleEndian(Span<byte>.Empty);
-                var result = new byte[writeResult.BytesRequired];
+                var result = new byte[BytesRequired];
                 WriteLittleEndian(result);
                 return result;
             }
@@ -115,8 +116,7 @@ namespace Poly
 
             public byte[] BigEndianBytes()
             {
-                var writeResult = WriteBigEndian(Span<byte>.Empty);
-                var result = new byte[writeResult.BytesRequired];
+                var result = new byte[BytesRequired];
                 WriteBigEndian(result);
                 return result;
             }

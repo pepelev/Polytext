@@ -29,7 +29,7 @@ namespace Poly.Tests
             var length = 0;
             foreach (var codePoint in @string)
             {
-                var result = codePoint.WriteUtf16(span[length..]);
+                var result = codePoint.AsUtf16.Write(span[length..]);
                 result.Completed.Should().BeTrue();
 
                 length += result.CodeUnitsWritten;
@@ -50,7 +50,7 @@ namespace Poly.Tests
             var length = 0;
             foreach (var codePoint in @string)
             {
-                var result = codePoint.WriteUtf8(span[length..]);
+                var result = codePoint.AsUtf8.Write(span[length..]);
                 result.Completed.Should().BeTrue();
 
                 length += result.BytesWritten;
@@ -71,7 +71,7 @@ namespace Poly.Tests
             var length = 0;
             foreach (var codePoint in @string)
             {
-                var result = codePoint.WriteUtf16LittleEndian(span[length..]);
+                var result = codePoint.AsUtf16.WriteLittleEndian(span[length..]);
                 result.Completed.Should().BeTrue();
 
                 length += result.BytesWritten;
@@ -92,7 +92,7 @@ namespace Poly.Tests
             var length = 0;
             foreach (var codePoint in @string)
             {
-                var result = codePoint.WriteUtf16BigEndian(span[length..]);
+                var result = codePoint.AsUtf16.WriteBigEndian(span[length..]);
                 result.Completed.Should().BeTrue();
 
                 length += result.BytesWritten;
@@ -113,7 +113,7 @@ namespace Poly.Tests
             var length = 0;
             foreach (var codePoint in @string)
             {
-                var result = codePoint.WriteUtf32LittleEndian(span[length..]);
+                var result = codePoint.AsUtf32.WriteLittleEndian(span[length..]);
                 result.Completed.Should().BeTrue();
 
                 length += result.BytesWritten;
@@ -134,7 +134,7 @@ namespace Poly.Tests
             var length = 0;
             foreach (var codePoint in @string)
             {
-                var result = codePoint.WriteUtf32BigEndian(span[length..]);
+                var result = codePoint.AsUtf32.WriteBigEndian(span[length..]);
                 result.Completed.Should().BeTrue();
 
                 length += result.BytesWritten;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Poly
@@ -23,6 +24,13 @@ namespace Poly
                     surrogates ??= new List<int>();
                     surrogates.Add(codepointIndex);
                     i += 2;
+                }
+                else if (char.IsLowSurrogate(value, i))
+                {
+                    throw new ArgumentException(
+                        $"Value is malformed - it contains low surrogate at [{i}] without preceding high surrogate.",
+                        nameof(value)
+                    );
                 }
                 else
                 {
