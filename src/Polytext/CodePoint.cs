@@ -5,12 +5,16 @@ namespace Poly
     public readonly partial struct CodePoint : IEquatable<CodePoint>, IComparable<CodePoint>
     {
         private const ushort TenBitsMask = 0b0011_1111_1111;
+        private const int MaximalCode = 0x10FFFF;
+        private const int SurrogatesRangeStart = 0xD800;
+        private const int SurrogatesRangeEnd = 0xDFFF;
+
         public static CodePoint Minimum => new(0);
-        public static CodePoint Maximum => new(0x10FFFF);
+        public static CodePoint Maximum => new(MaximalCode);
 
         public CodePoint(uint value)
         {
-            if (value > 0x10FFFF || 0xD800 <= value && value <= 0xDFFF)
+            if (MaximalCode < value || SurrogatesRangeStart <= value && value <= SurrogatesRangeEnd)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(value),
@@ -44,6 +48,8 @@ namespace Poly
         public static bool operator >(CodePoint left, CodePoint right) => left.CompareTo(right) > 0;
         public static bool operator <=(CodePoint left, CodePoint right) => left.CompareTo(right) <= 0;
         public static bool operator >=(CodePoint left, CodePoint right) => left.CompareTo(right) >= 0;
+
+        #region utf8
 
         public BytesWriteResult WriteUtf8(Span<byte> destination)
         {
@@ -108,6 +114,18 @@ namespace Poly
             }
         }
 
+        public byte[] AsUtf8Bytes()
+        {
+            var writeResult = WriteUtf8(Span<byte>.Empty);
+            var result = new byte[writeResult.BytesRequired];
+            WriteUtf8(result);
+            return result;
+        }
+
+        #endregion
+
+        #region utf16
+
         public Utf16WriteResult WriteUtf16(Span<char> destination)
         {
             if (Value <= 0xFFFF)
@@ -117,7 +135,7 @@ namespace Poly
                     return new Utf16WriteResult(1, 0);
                 }
 
-                destination[0] = unchecked((char) Value);
+                destination[0] = unchecked((char)Value);
                 return new Utf16WriteResult(1, 1);
             }
 
@@ -129,9 +147,17 @@ namespace Poly
             var content = Value - 0x10000;
             var high = (content >> 10) & TenBitsMask;
             var low = content & TenBitsMask;
-            destination[0] = unchecked((char) (0xD800 + high));
-            destination[1] = unchecked((char) (0xDC00 + low));
+            destination[0] = unchecked((char)(SurrogatesRangeStart + high));
+            destination[1] = unchecked((char)(0xDC00 + low));
             return new Utf16WriteResult(2, 2);
+        }
+
+        public char[] AsChars()
+        {
+            var writeResult = WriteUtf16(Span<char>.Empty);
+            var result = new char[writeResult.CodeUnitsRequired];
+            WriteUtf16(result);
+            return result;
         }
 
         public BytesWriteResult WriteUtf16LittleEndian(Span<byte> destination)
@@ -143,8 +169,8 @@ namespace Poly
                     return new BytesWriteResult(2, 0);
                 }
 
-                destination[0] = unchecked((byte) (Value & 0xFF));
-                destination[1] = unchecked((byte) (Value >> 8));
+                destination[0] = unchecked((byte)(Value & 0xFF));
+                destination[1] = unchecked((byte)(Value >> 8));
                 return new BytesWriteResult(2, 2);
             }
 
@@ -154,13 +180,21 @@ namespace Poly
             }
 
             var content = Value - 0x10000;
-            var high = 0xD800 + ((content >> 10) & TenBitsMask);
+            var high = SurrogatesRangeStart + ((content >> 10) & TenBitsMask);
             var low = 0xDC00 + (content & TenBitsMask);
-            destination[0] = unchecked((byte) (high & 0xFF));
-            destination[1] = unchecked((byte) (high >> 8));
-            destination[2] = unchecked((byte) (low & 0xFF));
-            destination[3] = unchecked((byte) (low >> 8));
+            destination[0] = unchecked((byte)(high & 0xFF));
+            destination[1] = unchecked((byte)(high >> 8));
+            destination[2] = unchecked((byte)(low & 0xFF));
+            destination[3] = unchecked((byte)(low >> 8));
             return new BytesWriteResult(4, 4);
+        }
+
+        public byte[] AsUtf16LittleEndianBytes()
+        {
+            var writeResult = WriteUtf16LittleEndian(Span<byte>.Empty);
+            var result = new byte[writeResult.BytesRequired];
+            WriteUtf16LittleEndian(result);
+            return result;
         }
 
         public BytesWriteResult WriteUtf16BigEndian(Span<byte> destination)
@@ -172,8 +206,8 @@ namespace Poly
                     return new BytesWriteResult(2, 0);
                 }
 
-                destination[0] = unchecked((byte) (Value >> 8));
-                destination[1] = unchecked((byte) (Value & 0xFF));
+                destination[0] = unchecked((byte)(Value >> 8));
+                destination[1] = unchecked((byte)(Value & 0xFF));
                 return new BytesWriteResult(2, 2);
             }
 
@@ -183,14 +217,26 @@ namespace Poly
             }
 
             var content = Value - 0x10000;
-            var high = 0xD800 + ((content >> 10) & TenBitsMask);
+            var high = SurrogatesRangeStart + ((content >> 10) & TenBitsMask);
             var low = 0xDC00 + (content & TenBitsMask);
-            destination[0] = unchecked((byte) (high >> 8));
-            destination[1] = unchecked((byte) (high & 0xFF));
-            destination[2] = unchecked((byte) (low >> 8));
-            destination[3] = unchecked((byte) (low & 0xFF));
+            destination[0] = unchecked((byte)(high >> 8));
+            destination[1] = unchecked((byte)(high & 0xFF));
+            destination[2] = unchecked((byte)(low >> 8));
+            destination[3] = unchecked((byte)(low & 0xFF));
             return new BytesWriteResult(4, 4);
         }
+
+        public byte[] AsUtf16BigEndianBytes()
+        {
+            var writeResult = WriteUtf16BigEndian(Span<byte>.Empty);
+            var result = new byte[writeResult.BytesRequired];
+            WriteUtf16BigEndian(result);
+            return result;
+        }
+
+        #endregion
+
+        #region utf32
 
         public BytesWriteResult WriteUtf32LittleEndian(Span<byte> destination)
         {
@@ -201,13 +247,21 @@ namespace Poly
 
             unchecked
             {
-                destination[0] = (byte) (Value & 0xFF);
-                destination[1] = (byte) ((Value >> 8) & 0xFF);
-                destination[2] = (byte) ((Value >> 16) & 0xFF);
-                destination[3] = (byte) ((Value >> 24) & 0xFF);
+                destination[0] = (byte)(Value & 0xFF);
+                destination[1] = (byte)((Value >> 8) & 0xFF);
+                destination[2] = (byte)((Value >> 16) & 0xFF);
+                destination[3] = (byte)((Value >> 24) & 0xFF);
             }
 
             return new BytesWriteResult(4, 4);
+        }
+
+        public byte[] AsUtf32LittleEndianBytes()
+        {
+            var writeResult = WriteUtf32LittleEndian(Span<byte>.Empty);
+            var result = new byte[writeResult.BytesRequired];
+            WriteUtf32LittleEndian(result);
+            return result;
         }
 
         public BytesWriteResult WriteUtf32BigEndian(Span<byte> destination)
@@ -219,13 +273,23 @@ namespace Poly
 
             unchecked
             {
-                destination[0] = (byte) ((Value >> 24) & 0xFF);
-                destination[1] = (byte) ((Value >> 16) & 0xFF);
-                destination[2] = (byte) ((Value >> 8) & 0xFF);
-                destination[3] = (byte) (Value & 0xFF);
+                destination[0] = (byte)((Value >> 24) & 0xFF);
+                destination[1] = (byte)((Value >> 16) & 0xFF);
+                destination[2] = (byte)((Value >> 8) & 0xFF);
+                destination[3] = (byte)(Value & 0xFF);
             }
 
             return new BytesWriteResult(4, 4);
         }
+
+        public byte[] AsUtf32BigEndianBytes()
+        {
+            var writeResult = WriteUtf32BigEndian(Span<byte>.Empty);
+            var result = new byte[writeResult.BytesRequired];
+            WriteUtf32BigEndian(result);
+            return result;
+        }
+
+        #endregion
     }
 }
