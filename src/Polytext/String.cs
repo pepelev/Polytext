@@ -21,10 +21,10 @@ namespace Poly
 
             if (Avx2.IsSupported)
             {
-                var xor = (ushort) 0xD800;
                 var mask = (ushort) 0xF800;
-                var xorVector = Avx2.BroadcastScalarToVector256(&xor);
+                var surrogateBits = (ushort) 0xD800;
                 var maskVector = Avx2.BroadcastScalarToVector256(&mask);
+                var surrogateBitsVector = Avx2.BroadcastScalarToVector256(&surrogateBits);
                 fixed (char* str = value)
                 {
                     var step = Vector256<ushort>.Count;
@@ -32,9 +32,9 @@ namespace Poly
                     {
                         var chars = Avx.LoadVector256((ushort*)(str + i));
                         var masked = Avx2.And(chars, maskVector);
-                        var equality = Avx2.CompareEqual(masked, xorVector);
-                        var msk = Avx2.MoveMask(equality.As<ushort, byte>());
-                        var surrogate = msk != 0;
+                        var equality = Avx2.CompareEqual(masked, surrogateBitsVector);
+                        var equalityBits = Avx2.MoveMask(equality.As<ushort, byte>());
+                        var surrogate = equalityBits != 0;
                         if (!surrogate)
                         {
                             i += step;
