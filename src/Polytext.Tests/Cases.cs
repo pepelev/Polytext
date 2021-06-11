@@ -111,6 +111,52 @@ namespace Poly.Tests
                 }
             ).Named("Russian letters (2 byte per letter in utf-8) with surrogates"),
             (
+                "Съешь ещё養этих мягких французских булок!",
+                new CodePoint[]
+                {
+                    new('С'),
+                    new('ъ'),
+                    new('е'),
+                    new('ш'),
+                    new('ь'),
+                    new(' '),
+                    new('е'),
+                    new('щ'),
+                    new('ё'),
+                    new('養'),
+                    new('э'),
+                    new('т'),
+                    new('и'),
+                    new('х'),
+                    new(' '),
+                    new('м'),
+                    new('я'),
+                    new('г'),
+                    new('к'),
+                    new('и'),
+                    new('х'),
+                    new(' '),
+                    new('ф'),
+                    new('р'),
+                    new('а'),
+                    new('н'),
+                    new('ц'),
+                    new('у'),
+                    new('з'),
+                    new('с'),
+                    new('к'),
+                    new('и'),
+                    new('х'),
+                    new(' '),
+                    new('б'),
+                    new('у'),
+                    new('л'),
+                    new('о'),
+                    new('к'),
+                    new('!')
+                }
+            ).Named("Russian letters (2 byte per letter in utf-8) with character with high code"),
+            (
                 "ﭐﭑﭒﭓﭔ",
                 new CodePoint[]
                 {
